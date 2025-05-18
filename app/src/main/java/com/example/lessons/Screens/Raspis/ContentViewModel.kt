@@ -32,7 +32,7 @@ import com.example.lessons.ui.theme.WorkForPerson
 fun Raspis(navController: NavController) {
     var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf("Расписание", "Заметки", "Профиль")
-    val profileViewModel: ProfileViewModel = viewModel() // Создаем ViewModel здесь
+    val profileViewModel: WorkForPerson = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -70,7 +70,7 @@ fun Raspis(navController: NavController) {
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.align(Alignment.Center)
                 )
-                2 -> PersonInfo(viewModel = profileViewModel) // Передаем созданный ViewModel
+                2 -> PersonInfo(viewModel = profileViewModel)
             }
         }
     }
