@@ -31,7 +31,7 @@ fun SplashScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0066FF)) // фон как на скрине
+            .background(Color(0xFF0066FF))
     ) {
         Column(
             modifier = Modifier

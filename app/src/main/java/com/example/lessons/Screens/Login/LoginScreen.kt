@@ -1,19 +1,25 @@
 package com.example.lessons.Screens.Login
 
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +35,10 @@ import com.example.lessons.Methods.isEmailValid
 import com.example.lessons.Models.UserManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import androidx.compose.material3.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.lessons.ui.theme.CustomOutlinedTextField
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -39,92 +49,129 @@ fun LoginScreen(navController: NavController) {
     var isLoading by remember { mutableStateOf(false) }
     val loginModel = remember { LoginModel() }
 
-    Column(
+    val backgroundColor = Color(0xFF0066FF)
+    val buttonColor = Color(0xFF0066FF)
+    val textColor = Color.White
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(backgroundColor)
+            .padding(24.dp)
     ) {
-        TextField(
-            value = email,
-            onValueChange = {
-                email = it
-                isEmailValid = email.isEmailValid()
-            },
-            label = { Text("Email") },
-            isError = !isEmailValid,
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        if (!isEmailValid) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = (-40).dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
-                text = "Некорректный email",
-                color = Color.Red,
-                modifier = Modifier.align(Alignment.Start)
+                text = "Вход",
+                style = MaterialTheme.typography.headlineMedium,
+                color = textColor
             )
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Пароль") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (loginError != null) {
-            Text(
-                text = loginError!!,
-                color = Color.Red,
-                modifier = Modifier.padding(bottom = 8.dp)
+            CustomOutlinedTextField(
+                value = email,
+                onValueChange = {
+                    email = it
+                    isEmailValid = email.isEmailValid()
+                },
+                label = "Email",
+                isError = !isEmailValid,
+                textColor = textColor
             )
-        }
 
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(48.dp))
-        } else {
-            Button(
-            onClick = {
-                loginModel.handleLogin(
-                    email = email,
-                    password = password,
-                    navController = navController,
-                    coroutineScope = CoroutineScope(Dispatchers.Main),
-                    onError = { error ->
-                        loginError = error
-                    },
-                    onLoading = { loading ->
-                        isLoading = loading
-                    },
-                    onSuccess = { user ->
-                        UserManager.setUser(user)
-                        Log.d("LoginScreen", "Пользователь сохранен: ${user.email}")
-                    }
-                )
-            },
 
-            enabled = email.isEmailValid() && password.isNotEmpty(),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Войти")
+            Spacer(modifier = Modifier.height(12.dp))
+
+            CustomOutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = "Пароль",
+                visualTransformation = PasswordVisualTransformation(),
+                textColor = textColor
+            )
+
+            if (loginError != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(loginError!!, color = Color.Red)
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(
-            onClick = { navController.navigate("register") },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
         ) {
-            Text("Нет аккаунта? Зарегистрируйтесь")
+            if (isLoading) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            } else {
+                Button(
+                    onClick = {
+                        loginModel.handleLogin(
+                            email = email,
+                            password = password,
+                            navController = navController,
+                            coroutineScope = CoroutineScope(Dispatchers.Main),
+                            onError = { loginError = it },
+                            onLoading = { isLoading = it },
+                            onSuccess = { UserManager.setUser(it) }
+                        )
+                    },
+                    enabled = email.isEmailValid() && password.isNotEmpty(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                ) {
+                    Text(
+                        text = "Войти",
+                        color = Color(0xFF0066FF),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(color = Color.White, modifier = Modifier.weight(1f))
+                    Text("  или  ", color = Color.White)
+                    Divider(color = Color.White, modifier = Modifier.weight(1f))
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = { navController.navigate("register") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(2.dp, Color.White),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ) {
+                    Text(
+                        text = "Регистрация",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
 }
+
+
 
