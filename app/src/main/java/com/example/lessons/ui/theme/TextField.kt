@@ -2,10 +2,12 @@ package com.example.lessons.ui.theme
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
@@ -17,7 +19,8 @@ fun CustomOutlinedTextField(
     isError: Boolean = false,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     modifier: Modifier = Modifier,
-    textColor: Color = Color.White
+    textColor: Color = Color.White,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(
         value = value,
@@ -36,6 +39,7 @@ fun CustomOutlinedTextField(
             cursorColor = textColor,
             focusedLabelColor = textColor,
             unfocusedLabelColor = textColor
-        )
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
     )
 }
