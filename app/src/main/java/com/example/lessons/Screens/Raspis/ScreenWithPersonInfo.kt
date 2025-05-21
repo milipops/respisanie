@@ -1,7 +1,5 @@
-package com.example.lessons.Screens.Profile
+package com.example.lessons.Screens.Raspis
 
-import android.app.Person
-import  androidx.lifecycle.viewmodel.compose.viewModel
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -37,43 +35,41 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
-import com.example.lessons.Models.UserInfoCard
-import com.example.lessons.Models.UserManager.currentUser
 import com.example.lessons.ui.theme.WorkForPerson
-import kotlinx.coroutines.flow.StateFlow
 
 
 @Composable
-fun PersonInfo(viewModel: ViewModel)
-{
-    val context = LocalContext.current
+fun PersonInfo(
+    viewModel: WorkForPerson
+) {
+    val backgroundColor = Color(0xFF5DA8FF)
+    val inputColor = Color(0xFFA2C7FF)
+    val buttonColor = Color(0xFF003366)
+    val textColor = Color.White
 
-    val viewModel: WorkForPerson = viewModel()
+    val context = LocalContext.current
     val userData by viewModel.currentUser.collectAsState()
     val currentUser = userData.firstOrNull()
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Launcher для выбора изображения
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         selectedImageUri = uri
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(15.dp)
+            .background(backgroundColor)
     ) {
-        // Аватар пользователя с возможностью выбора нового
+        // Блок с аватаром
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,21 +77,16 @@ fun PersonInfo(viewModel: ViewModel)
                 .clickable { imagePickerLauncher.launch("image/*") },
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clickable { imagePickerLauncher.launch("image/*") },
-                contentAlignment = Alignment.Center
-            ) {
-                if (selectedImageUri != null) {
+            when {
+                selectedImageUri != null -> {
                     Image(
                         painter = rememberImagePainter(selectedImageUri),
                         contentDescription = "Выбранный аватар",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
-                } else if (!currentUser?.image_url.isNullOrEmpty()) {
+                }
+                !currentUser?.image_url.isNullOrEmpty() -> {
                     AsyncImage(
                         model = currentUser?.image_url,
                         contentDescription = "User avatar",
@@ -104,6 +95,7 @@ fun PersonInfo(viewModel: ViewModel)
                     )
                 }
             }
+
             Icon(
                 imageVector = Icons.Default.AddCircle,
                 contentDescription = "Изменить фото",
@@ -114,40 +106,104 @@ fun PersonInfo(viewModel: ViewModel)
                     .padding(8.dp),
                 tint = Color.Black
             )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            UserInfoCard(
-                title = "Имя",
-                value = currentUser?.name ?: "Не указано"
-            )
+        // Карточки с информацией (оставил твои стили)
+        UserInfoCard(
+            title = "Имя",
+            value = currentUser?.name ?: "Не указано",
+        )
 
+        UserInfoCard(
+            title = "Почта",
+            value = currentUser?.email ?: "Не указано",
+        )
 
-            UserInfoCard(
-                title = "Почта",
-                value = currentUser?.email ?: "Не указано"
-            )
-            UserInfoCard(
-                title = "Телефон",
-                value = currentUser?.phone ?: "Не указано"
-            )
+        UserInfoCard(
+            title = "Телефон",
+            value = currentUser?.phone ?: "Не указано",
+        )
+
+        // Кнопки
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Button(
+                onClick = {
+                    selectedImageUri?.let { uri ->
+                        viewModel.uploadAvatar(uri, context)
+                    }
+                    Toast.makeText(context, "Данные сохранены", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
+            ) {
+                Text("Сохранить", fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = {
-                    // Сохраняем выбранное изображение
-                    selectedImageUri?.let { uri ->
-                        viewModel.uploadAvatar(uri, context)
+
+                        Toast.makeText(context, "Выход", Toast.LENGTH_SHORT).show()
+
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text("Выйти из аккаунта", fontSize = 18.sp)
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = {
+                    currentUser?.id?.let { userId ->
+
+                            Toast.makeText(context, "Данные удалены", Toast.LENGTH_SHORT).show()
+
                     } ?: run {
-                        Toast.makeText(context, "Данные сохранены", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF80CBC4))
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
-                Text("Сохранить", fontSize = 18.sp)
+                Text("Удалить аккаунта", fontSize = 18.sp)
             }
         }
     }
 }
+
+// Твой компонент UserInfoCard оставляю без изменений
+@Composable
+fun UserInfoCard(title: String, value: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFA2C7FF))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                fontSize = 14.sp,
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+

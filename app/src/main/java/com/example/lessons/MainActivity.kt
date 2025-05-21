@@ -10,9 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.lessons.Screens.Login.LoginScreen
-import com.example.lessons.Screens.Raspis.Raspis
+import com.example.lessons.Screens.Profile.Raspisanie
 import com.example.lessons.Screens.Register.RegisterScreen
 import com.example.lessons.ui.theme.LessonsTheme
+import com.example.lessons.ui.theme.WorkForPerson
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.postgrest.Postgrest
@@ -47,7 +48,7 @@ fun AppNavigator() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("content"){ Raspis(navController) }
+        composable("content"){ Raspisanie(navController, WorkForPerson()) }
         composable("splash") { SplashScreen(navController) }
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }

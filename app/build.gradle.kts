@@ -89,10 +89,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-<<<<<<< HEAD
 
     //Json
     implementation ("com.google.code.gson:gson:2.10.1")
-=======
->>>>>>> a7ebd75cae2dbe5d4ba9bdb7345162a4964e27ea
+
 }
