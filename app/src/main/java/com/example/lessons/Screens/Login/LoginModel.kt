@@ -2,6 +2,7 @@ package com.example.lessons.Screens.Login
 
 import android.util.Log
 import androidx.navigation.NavController
+import com.example.lessons.Methods.hashPassword
 import com.example.lessons.Methods.isEmailValid
 import com.example.lessons.Models.Person
 import com.example.lessons.supabase
@@ -55,7 +56,9 @@ class LoginModel {
                 } else {
                     Log.d("LoginModel", "Пользователь найден: ${user.email}")
 
-                    if (user.password != password) {
+                    val hashedInputPassword = hashPassword(password)
+
+                    if (user.password != hashedInputPassword) {
                         Log.d("LoginModel", "Неверный пароль для email: $email")
                         onError("Неверный пароль")
                     } else {
