@@ -6,11 +6,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+<<<<<<< HEAD
 import com.example.lessons.Models.Lesson
 import com.example.lessons.Models.ScheduleItem
 import com.example.lessons.Models.ScheduleResponse
 import com.example.lessons.supabase
 import com.google.gson.Gson
+=======
+import com.example.lessons.supabase
+>>>>>>> a7ebd75cae2dbe5d4ba9bdb7345162a4964e27ea
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
@@ -18,13 +22,19 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.storage.upload
 import io.ktor.client.call.NoTransformationFoundException
+<<<<<<< HEAD
 import kotlinx.coroutines.Dispatchers
+=======
+>>>>>>> a7ebd75cae2dbe5d4ba9bdb7345162a4964e27ea
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+<<<<<<< HEAD
 import kotlinx.coroutines.withContext
 import java.net.URL
+=======
+>>>>>>> a7ebd75cae2dbe5d4ba9bdb7345162a4964e27ea
 import java.util.UUID
 
 class WorkForPerson :ViewModel() {
@@ -73,6 +83,7 @@ class WorkForPerson :ViewModel() {
             }
         }
     }
+<<<<<<< HEAD
 
     private val _scheduleState = MutableStateFlow<List<ScheduleItem>>(emptyList())
     val scheduleState: StateFlow<List<ScheduleItem>> = _scheduleState
@@ -166,4 +177,6 @@ class WorkForPerson :ViewModel() {
             }
         )
     }
+=======
+>>>>>>> a7ebd75cae2dbe5d4ba9bdb7345162a4964e27ea
 }
