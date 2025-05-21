@@ -29,10 +29,11 @@ class RegisterViewModel : ViewModel() {
     }
 
 
-    fun isPhoneValid(): Boolean {
-        val cleanPhone = _uiState.value.phone.filter { it.isDigit() }
-        return cleanPhone.length == 11 && (cleanPhone.startsWith("7") || cleanPhone.startsWith("8"))
+    fun isPhoneValid(phone: String): Boolean {
+        return phone.length == 11 && phone.startsWith("7")
     }
+
+
 
     fun register() {
         println("Начало регистрации...")
@@ -52,10 +53,12 @@ class RegisterViewModel : ViewModel() {
             return
         }
 
-        if (!isPhoneValid()) {
+        if (!isPhoneValid(_uiState.value.phone)) {
             _resultState.value = ResultState.Error("Некорректный номер телефона")
             return
         }
+
+
         _resultState.value = ResultState.Loading
 
         viewModelScope.launch {
@@ -69,7 +72,7 @@ class RegisterViewModel : ViewModel() {
                     "name" to _uiState.value.name,
                     "email" to _uiState.value.email,
                     "password" to hashedPassword,
-                    "phone" to _uiState.value.phone
+                    "phone" to "+${_uiState.value.phone}"
                 )
 
 

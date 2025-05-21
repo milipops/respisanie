@@ -9,39 +9,37 @@ import kotlin.math.min
 // Функция для форматирования номера телефона
 fun formatPhoneNumber(digits: String): String {
     val cleanDigits = digits.filter { it.isDigit() }.take(11)
-    if (cleanDigits.isEmpty()) return cleanDigits
+    if (cleanDigits.isEmpty()) return "+7"
 
     return buildString {
-        when {
-            cleanDigits.startsWith("7") || cleanDigits.startsWith("8") -> {
-                append("+7")
-                val remaining = cleanDigits.drop(1)
-                if (remaining.isNotEmpty()) {
-                    append(" (${remaining.take(3)}")
-                    if (remaining.length > 3) append(") ${remaining.drop(3).take(3)}")
-                    if (remaining.length > 6) append("-${remaining.drop(6).take(2)}")
-                    if (remaining.length > 8) append("-${remaining.drop(8).take(2)}")
-                }
-            }
-            else -> append(cleanDigits) // Для номеров не начинающихся с 7 или 8
+        append("+7")
+        val remaining = if (cleanDigits.startsWith("7")) cleanDigits.drop(1) else cleanDigits
+        if (remaining.isNotEmpty()) {
+            append(" (${remaining.take(3)}")
+            if (remaining.length > 3) append(") ${remaining.drop(3).take(3)}")
+            if (remaining.length > 6) append("-${remaining.drop(6).take(2)}")
+            if (remaining.length > 8) append("-${remaining.drop(8).take(2)}")
         }
     }
 }
+
 // VisualTransformation для отображения маски телефона
 class PhoneNumberVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
-        return try {
-            val formatted = formatPhoneNumber(text.text)
-            TransformedText(
-                AnnotatedString(formatted),
-                PhoneNumberOffsetMapping
-            )
-        } catch (e: Exception) {
-            // В случае ошибки возвращаем исходный текст без преобразования
-            TransformedText(text, OffsetMapping.Identity)
+        val formatted = formatPhoneNumber(text.text)
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                return min(offset, formatted.length)
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                return min(offset, text.text.length)
+            }
         }
+        return TransformedText(AnnotatedString(formatted), offsetMapping)
     }
 }
+
 
 // Для корректного позиционирования курсора
 object PhoneNumberOffsetMapping : OffsetMapping {

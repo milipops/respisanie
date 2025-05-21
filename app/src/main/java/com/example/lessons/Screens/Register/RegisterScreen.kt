@@ -148,8 +148,9 @@ fun RegisterScreen(navController: NavController) {
             CustomOutlinedTextField(
                 value = state.phone,
                 onValueChange = {
-                    val digits = it.filter { ch -> ch.isDigit() }.take(11)
-                    viewModel.updateState(state.copy(phone = digits))
+                    val digits = it.filter { ch -> ch.isDigit() }
+                    val phoneNumber = if (digits.startsWith("7")) digits else "7$digits"
+                    viewModel.updateState(state.copy(phone = phoneNumber.take(11)))
                 },
                 label = "Номер телефона",
                 visualTransformation = phoneVisualTransformation,
