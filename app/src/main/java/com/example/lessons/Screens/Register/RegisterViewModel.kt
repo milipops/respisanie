@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.lessons.Methods.hashPassword
 import com.example.lessons.Methods.isEmailValid
 import com.example.lessons.supabase
 import io.github.jan.supabase.postgrest.from
@@ -61,13 +62,16 @@ class RegisterViewModel : ViewModel() {
             try {
                 println("Отправка данных в Supabase...")
 
+                val hashedPassword = hashPassword(_uiState.value.password)
+
                 val userData = mapOf(
                     "id" to UUID.randomUUID().toString(),
                     "name" to _uiState.value.name,
                     "email" to _uiState.value.email,
-                    "password" to _uiState.value.password,
+                    "password" to hashedPassword,
                     "phone" to _uiState.value.phone
                 )
+
 
                 supabase.from("person").insert(userData)
 
