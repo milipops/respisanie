@@ -27,15 +27,21 @@ data class ScheduleItem(
 data class Paralel(
     val id: Int,
     val name: String,
-    val instrumental_case: String,// Уточни, если там может быть объект преподавателя
+    val instrumental_case: String,
     val full_name: String,
 )
 
 data class NoteData(
     val text: String?,
-    val paras: List<Any>?,     // Уточни тип, если известно
+    val paras: List<Any>?,
     val is_cancel: Boolean?,
-    val teacher: Any?,          // Уточни, если там может быть объект преподавателя
+    val teacher: TeacherDetail,
+)
+
+data class TeacherDetail(
+    val id: Int,
+    val name: String,
+    val instrumental_case: String,
 )
 
 data class ParaDetail(

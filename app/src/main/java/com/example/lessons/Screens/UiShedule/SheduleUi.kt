@@ -17,12 +17,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.lessons.Models.BellItem
 import com.example.lessons.Models.ScheduleItem
+import com.example.lessons.Models.Teacher
 import com.example.lessons.ui.theme.WorkForPerson
 
 
 @Composable
-fun ScheduleList(viewModel: WorkForPerson) {
+fun ScheduleList(
+    viewModel: WorkForPerson,
+    bells: List<BellItem>,
+) {
     val schedule by viewModel.scheduleState.collectAsState()
 
     LazyColumn(
@@ -42,10 +47,14 @@ fun ScheduleList(viewModel: WorkForPerson) {
             val groupedByPara = schedule.groupBy { it.para }
 
             for ((_, lessons) in groupedByPara) {
-                val leftColumnItems = lessons.filter { it.type !in
-                        listOf("change", "groupNote", "replace", "add", "parallel") }
-                val rightColumnItems = lessons.filter { it.type in
-                        listOf("change", "groupNote", "replace", "add", "parallel") }
+                val leftColumnItems = lessons.filter {
+                    it.type !in
+                            listOf("change", "groupNote", "replace", "add", "parallel")
+                }
+                val rightColumnItems = lessons.filter {
+                    it.type in
+                            listOf("change", "groupNote", "replace", "add", "parallel")
+                }
 
                 item {
                     Row(
@@ -56,12 +65,12 @@ fun ScheduleList(viewModel: WorkForPerson) {
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             leftColumnItems.forEach {
-                                ScheduleCard(item = it)
+                                ScheduleCard(item = it, bells = bells)
                             }
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             rightColumnItems.forEach {
-                                ScheduleCard(item = it)
+                                ScheduleCard(item = it, bells = bells)
                             }
                         }
                     }
@@ -71,16 +80,18 @@ fun ScheduleList(viewModel: WorkForPerson) {
     }
 }
 
-
-
-
-
 @Composable
-fun ScheduleCard(item: ScheduleItem, modifier: Modifier = Modifier) {
+fun ScheduleCard(
+    item: ScheduleItem,
+    bells: List<BellItem>,
+    modifier: Modifier = Modifier,
+) {
     val isCancel = "remove" in item.type
     val backgroundColor = if (item.type == "change")
         Color(0xFFFFF9C4) else Color(0xFFE1F5FE)
-    val paraText = "Пара №${item.para}" + if (item.type == "change") " (замена)"  else ""
+    val paraText = if (item.para == 0) "Заметка " else "Пара №${item.para}" +
+            if (item.type == "change") " " else ""
+    val bell = bells.firstOrNull { it.para == item.para }
 
     Card(
         modifier = modifier.padding(8.dp),
@@ -91,42 +102,80 @@ fun ScheduleCard(item: ScheduleItem, modifier: Modifier = Modifier) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = paraText, style = MaterialTheme.typography.titleMedium)
 
-            item.noteData?.text?.takeIf { !it.isNullOrBlank() }?.let {
-                Text(text = "Примечание: ${item.noteData?.text ?: "Неизвестно"}")
-                Text(text = " ${item.noteData?.paras ?: "Неизвестно"}")
-                Text(text = " ${item.noteData?.is_cancel ?: "Неизвестно"}")
-                Text(text = " ${item.noteData?.teacher ?: "Неизвестно"}")
-
-
-
+            bell?.let {
+                Text(text = "Время: ${it.start_time} – ${it.end_time}")
             }
+
+            item.noteData?.let { note ->
+                val hasNote = note.text?.isNotBlank() == true
+                val hasParas = !note.paras.isNullOrEmpty()
+                val hasTeacher = note.teacher?.name?.isNotBlank() == true  // Исправлено здесь
+                val hasCancel = note.is_cancel?.toString()?.isNotBlank() == true
+
+                val isAllEmpty = !hasNote && !hasParas && !hasCancel
+
+                if (isAllEmpty) {
+
+                } else {
+                    Column {
+                        if (hasNote) {
+                            Text(text = "Примечание: ${note.text}")
+                        }
+                        if (hasParas) {
+                            val parasFormatted = note.paras
+                                ?.mapNotNull { item ->
+                                    when (item) {
+                                        is Number -> item.toInt()  // Если число — конвертируем в Int
+                                        is String -> item.toIntOrNull()  // Если строка — пробуем распарсить
+                                        else -> null  // Игнорируем остальные типы
+                                    }
+                                }
+                                ?.joinToString(",")  // Объединяем через запятую
+                            Text(text = "Пары: $parasFormatted")
+
+                        }
+                        if (hasTeacher) {
+                            Text(text = "Преподаватель: ${note.teacher.name}")
+                        }
+                        if (hasCancel) {
+                            Text(text = "Отмена: ${note.is_cancel}")
+                        }
+                    }
+                }
+            }
+
+
             if (isCancel) {
-                Text(text = " Занятие отменено", color = Color.Red)
+                Text(text = "Занятие отменено", color = Color.Red)
             } else {
-                Text(text = "Предмет: ${item.lesson?.name ?: "Неизвестно"}")
-                Text(text = "Аудитория: ${item.cabinet?.name ?: "Не указана"}")
-                Text(
-                    text = "Преподаватель: ${
-                        item.teachers?.joinToString(", ") { it.name } ?: "—"
-                    }"
-                )
-
-                item.parallel?.name?.takeIf { it.isNotBlank() }?.let {
-                    Text(text = "Параллель: $it")
-                }
-                item.parallel?.full_name?.takeIf { it.isNotBlank() }?.let {
-                    Text(text = ": $it")
+                item.lesson?.name?.takeIf { it.isNotBlank() }?.let {
+                    Text(text = "Предмет: $it")
                 }
 
-                item.parallel?.instrumental_case?.takeIf { it.isNotBlank() }?.let {
-                    Text(text = ": $it")
+                item.cabinet?.name?.takeIf { it.isNotBlank() }?.let {
+                    Text(text = "Аудитория: $it")
                 }
 
+                item.teachers?.joinToString(", ") { it.name }
+                    ?.takeIf { it.isNotBlank() }?.let {
+                        Text(text = "Преподаватель: $it")
+                    }
+
+                item.parallel?.let { parallel ->
+                    parallel.name?.takeIf { it.isNotBlank() }?.let {
+                        Text(text = "Параллель: $it")
+                    }
+                    parallel.full_name?.takeIf { it.isNotBlank() }?.let {
+                        Text(text = it)
+                    }
+                    parallel.instrumental_case?.takeIf { it.isNotBlank() }?.let {
+                        Text(text = it)
+                    }
+                }
             }
         }
     }
 }
-
 
 
 

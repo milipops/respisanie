@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.lessons.Models.BellItem
 import com.example.lessons.Screens.UiShedule.ScheduleList
 import com.example.lessons.ui.theme.WorkForPerson
 import java.time.Instant
@@ -176,8 +177,18 @@ fun ScheduleScreen(
             ) {
                 Text("Смотреть")
             }
+            val bells = remember {
+                listOf(
+                    BellItem(para = 1, start_time = "08:00", end_time = "09:30"),
+                    BellItem(para = 2, start_time = "09:50", end_time = "11:20"),
+                    BellItem(para = 3, start_time = "11:50", end_time = "13:20"),
+                    BellItem(para = 4, start_time = "13:30", end_time = "15:00"),
+                    BellItem(para = 5, start_time = "15:10", end_time = "16:40"),
+                    BellItem(para = 6, start_time = "16:50", end_time = "18:20")
+                )
+            }
 
-            ScheduleList(viewModel = viewModel)
+            ScheduleList(viewModel = viewModel, bells = bells)
 
         }
     }
