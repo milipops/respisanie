@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.lessons.Screens.Raspis.PersonInfo
 import com.example.lessons.Screens.Raspis.ScheduleScreen
 import com.example.lessons.ui.theme.WorkForPerson
@@ -57,7 +58,7 @@ fun Raspisanie(
         ) {
             when (selectedItem) {
                 0 -> ScheduleScreen(groupId = 0, viewModel = viewModel)
-                1 -> PersonInfo(viewModel = viewModel)
+                1 -> PersonInfo(viewModel = viewModel, navController = navController)
             }
         }
     }

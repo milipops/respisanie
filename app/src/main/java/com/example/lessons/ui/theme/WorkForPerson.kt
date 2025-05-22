@@ -4,12 +4,14 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lessons.Models.Lesson
 import com.example.lessons.Models.Person
 import com.example.lessons.Models.ScheduleItem
 import com.example.lessons.Models.ScheduleResponse
+import com.example.lessons.Models.UserManager
 import com.example.lessons.Models.group
 import com.example.lessons.supabase
 import com.google.gson.Gson
@@ -36,6 +38,7 @@ class WorkForPerson : ViewModel() {
 
     val _currentUser = MutableStateFlow<List<Person>>(emptyList())
     val currentUser: StateFlow<List<Person>> get() = _currentUser
+    val currentUser2 by UserManager.currentUser
 
     fun uploadAvatar(uri: Uri, context: Context) {
         viewModelScope.launch {
@@ -45,7 +48,7 @@ class WorkForPerson : ViewModel() {
                     ?: throw Exception("Не получилось открыть картинку")
 
                 // Создаем уникальное имя файла
-                val userId = supabase.auth.currentUserOrNull()?.id
+                val userId = currentUser2?.id
                     ?: throw Exception("Пользователь не вошел в систему")
                 val fileName = "avatar_$userId.jpg"
 
@@ -63,9 +66,9 @@ class WorkForPerson : ViewModel() {
                     .publicUrl(fileName)
 
                 // Обновляем в базу
-                supabase.from("Users")
+                supabase.from("person")
                     .update({
-                        set("Image", imageUrl)
+                        set("image_url", imageUrl)
                     }) {
                         filter {
                             eq("id", userId)
@@ -196,6 +199,7 @@ class WorkForPerson : ViewModel() {
         loadGroup()
 
     }
+
     fun loadGroup() {
         viewModelScope.launch {
             try {
@@ -214,5 +218,35 @@ class WorkForPerson : ViewModel() {
         }
     }
 
+    fun signOut() {
+        viewModelScope.launch {
+            try {
+                supabase.auth.clearSession()
+                _currentUser.value = emptyList()
+            } catch (e: Exception) {
+                Log.e("Auth", "Ошибка при выходе", e)
+            }
+        }
+    }
+
+    fun deleteAccount(userId: String, context: Context, onResult: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                // Пример: удаление из репозитория
+                supabase.from("person").delete{
+                        filter {
+                            eq("id",userId)
+                        }
+                    }
+
+                // Очистка данных пользователя
+                UserManager.clearUser()
+                onResult()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Ошибка при удалении: ${e.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
 
 }

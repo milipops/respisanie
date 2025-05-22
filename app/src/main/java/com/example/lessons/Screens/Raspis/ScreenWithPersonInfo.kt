@@ -38,15 +38,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import com.example.lessons.Models.UserManager
+import com.example.lessons.Screens.Register.RegisterScreen
 import com.example.lessons.ui.theme.WorkForPerson
 
 
 @Composable
 fun PersonInfo(
-    viewModel: WorkForPerson
+    viewModel: WorkForPerson,
+    navController: NavController
+
 ) {
     val backgroundColor = Color(0xFF5DA8FF)
     val inputColor = Color(0xFFA2C7FF)
@@ -87,6 +94,7 @@ fun PersonInfo(
                         contentScale = ContentScale.Crop
                     )
                 }
+
                 !currentUser?.image_url.isNullOrEmpty() -> {
                     AsyncImage(
                         model = currentUser?.image_url,
@@ -124,7 +132,6 @@ fun PersonInfo(
 
         UserInfoCard(
             title = "Телефон",
-
             value = currentUser?.phone ?: "Не указано",
         )
 
@@ -146,11 +153,11 @@ fun PersonInfo(
             ) {
                 Text("Сохранить", fontSize = 18.sp)
             }
-
             Spacer(modifier = Modifier.height(10.dp))
-
             Button(
                 onClick = {
+                    viewModel.signOut()
+                    navController.navigate("login")
                     Toast.makeText(context, "Выход", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -164,12 +171,18 @@ fun PersonInfo(
             Button(
                 onClick = {
                     currentUser?.id?.let { userId ->
-
+                        viewModel.deleteAccount(userId,context){
                             Toast.makeText(context, "Данные удалены", Toast.LENGTH_SHORT).show()
-
+                            navController.navigate("login")
+                        }
                     } ?: run {
-                        Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Ошибка: пользователь не найден",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
