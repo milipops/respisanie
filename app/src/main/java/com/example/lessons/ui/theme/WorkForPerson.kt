@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lessons.Models.Lesson
+import com.example.lessons.Models.Person
 import com.example.lessons.Models.ScheduleItem
 import com.example.lessons.Models.ScheduleResponse
 import com.example.lessons.Models.group
@@ -33,8 +34,8 @@ import java.util.UUID
 
 class WorkForPerson : ViewModel() {
 
-    val _currentUser = MutableStateFlow<List<com.example.lessons.Models.Person>>(emptyList())
-    val currentUser: StateFlow<List<com.example.lessons.Models.Person>> get() = _currentUser
+    val _currentUser = MutableStateFlow<List<Person>>(emptyList())
+    val currentUser: StateFlow<List<Person>> get() = _currentUser
 
     fun uploadAvatar(uri: Uri, context: Context) {
         viewModelScope.launch {
@@ -193,6 +194,7 @@ class WorkForPerson : ViewModel() {
 
     init {
         loadGroup()
+
     }
     fun loadGroup() {
         viewModelScope.launch {
@@ -211,7 +213,6 @@ class WorkForPerson : ViewModel() {
             }
         }
     }
-
 
 
 }

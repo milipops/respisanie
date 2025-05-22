@@ -48,7 +48,7 @@ fun AppNavigator() {
         navController = navController,
         startDestination = "splash"
     ) {
-        composable("content"){ Raspisanie(navController, WorkForPerson()) }
+        composable("content"){ Raspisanie(viewModel = WorkForPerson(), navController = navController) }
         composable("splash") { SplashScreen(navController) }
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }

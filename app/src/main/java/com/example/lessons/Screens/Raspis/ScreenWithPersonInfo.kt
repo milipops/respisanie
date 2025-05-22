@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
+import com.example.lessons.Models.UserManager
 import com.example.lessons.ui.theme.WorkForPerson
 
 
@@ -54,7 +55,7 @@ fun PersonInfo(
 
     val context = LocalContext.current
     val userData by viewModel.currentUser.collectAsState()
-    val currentUser = userData.firstOrNull()
+    val currentUser by UserManager.currentUser
 
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -110,7 +111,7 @@ fun PersonInfo(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Карточки с информацией (оставил твои стили)
+        // Карточки с информацией
         UserInfoCard(
             title = "Имя",
             value = currentUser?.name ?: "Не указано",
@@ -123,6 +124,7 @@ fun PersonInfo(
 
         UserInfoCard(
             title = "Телефон",
+
             value = currentUser?.phone ?: "Не указано",
         )
 
@@ -149,9 +151,7 @@ fun PersonInfo(
 
             Button(
                 onClick = {
-
-                        Toast.makeText(context, "Выход", Toast.LENGTH_SHORT).show()
-
+                    Toast.makeText(context, "Выход", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
@@ -180,7 +180,6 @@ fun PersonInfo(
     }
 }
 
-// Твой компонент UserInfoCard оставляю без изменений
 @Composable
 fun UserInfoCard(title: String, value: String) {
     Card(

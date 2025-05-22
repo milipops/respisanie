@@ -30,6 +30,7 @@ fun Raspisanie(
 ) {
     var selectedItem by remember { mutableIntStateOf(0) }
     val items = listOf("Расписание", "Профиль")
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -55,8 +56,8 @@ fun Raspisanie(
                 .fillMaxSize()
         ) {
             when (selectedItem) {
-                0 -> ScheduleScreen(groupId = 0,viewModel = WorkForPerson())
-                1 -> PersonInfo(viewModel = WorkForPerson())
+                0 -> ScheduleScreen(groupId = 0, viewModel = viewModel)
+                1 -> PersonInfo(viewModel = viewModel)
             }
         }
     }
