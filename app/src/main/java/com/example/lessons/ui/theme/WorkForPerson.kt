@@ -117,7 +117,7 @@ class WorkForPerson(
         }
     }
 
-    private fun mergeSchedule(
+    fun mergeSchedule(
         main: List<ScheduleItem>?,
         change: List<ScheduleItem>?,
     ): List<ScheduleItem> {

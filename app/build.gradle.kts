@@ -93,6 +93,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    androidTestImplementation ("androidx.test:runner:1.5.2")
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+
     //Json
     implementation("com.google.code.gson:gson:2.10.1")
 
