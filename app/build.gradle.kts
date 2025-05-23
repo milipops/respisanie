@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.lessons"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.lessons"
@@ -80,10 +80,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
     implementation("io.ktor:ktor-client-core:2.3.0")
-    implementation(libs.firebase.appdistribution.gradle)
-    implementation(libs.androidx.ui.test.junit4.android)
-    implementation(libs.androidx.junit.ktx)
-
+    testImplementation ("io.mockk:mockk:1.13.9")
+    implementation(libs.junit.junit)
+    androidTestImplementation ("androidx.navigation:navigation-testing")
+    androidTestImplementation ("androidx.test:core")
+    androidTestImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -93,21 +94,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    androidTestImplementation ("androidx.test:runner:1.5.2")
-    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
-
     //Json
-    implementation("com.google.code.gson:gson:2.10.1")
-
-    // Unit-тесты
-    testImplementation ("io.mockk:mockk:1.13.5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("com.google.truth:truth:1.1.5")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
-
-    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.0")
-    androidTestImplementation ("androidx.compose.ui:ui-test-manifest:1.6.0")
-
-
+    implementation ("com.google.code.gson:gson:2.10.1")
 
 }
