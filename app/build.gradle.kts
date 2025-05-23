@@ -80,7 +80,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
     implementation("io.ktor:ktor-client-core:2.3.0")
-
+    testImplementation ("io.mockk:mockk:1.13.9")
+    implementation(libs.junit.junit)
+    androidTestImplementation ("androidx.navigation:navigation-testing")
+    androidTestImplementation ("androidx.test:core")
+    androidTestImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
