@@ -16,11 +16,14 @@ import com.example.lessons.Models.group
 import com.example.lessons.supabase
 import com.google.gson.Gson
 import com.example.lessons.supabase
+import com.google.android.gms.auth.api.signin.internal.Storage
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.auth
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.storage.Bucket
 import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.storage.upload
 import io.ktor.client.call.NoTransformationFoundException
@@ -34,7 +37,8 @@ import kotlinx.coroutines.withContext
 import java.net.URL
 import java.util.UUID
 
-class WorkForPerson : ViewModel() {
+class WorkForPerson(
+) : ViewModel() {
 
     val _currentUser = MutableStateFlow<List<Person>>(emptyList())
     val currentUser: StateFlow<List<Person>> get() = _currentUser
@@ -223,13 +227,14 @@ class WorkForPerson : ViewModel() {
             try {
                 supabase.auth.clearSession()
                 _currentUser.value = emptyList()
+                UserManager.clearUser()
             } catch (e: Exception) {
                 Log.e("Auth", "Ошибка при выходе", e)
             }
         }
     }
 
-    fun deleteAccount(userId: String, context: Context, onResult: () -> Unit) {
+     fun deleteAccount(userId: String, context: Context, onResult: () -> Unit) {
         viewModelScope.launch {
             try {
                 // Пример: удаление из репозитория

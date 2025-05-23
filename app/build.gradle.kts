@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.lessons"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.lessons"
@@ -80,6 +80,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.foundation:foundation:1.5.4")
     implementation("io.ktor:ktor-client-core:2.3.0")
+    implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.androidx.ui.test.junit4.android)
+    implementation(libs.androidx.junit.ktx)
 
 
     testImplementation(libs.junit)
@@ -91,6 +94,17 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //Json
-    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Unit-тесты
+    testImplementation ("io.mockk:mockk:1.13.5")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+
+    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.6.0")
+    androidTestImplementation ("androidx.compose.ui:ui-test-manifest:1.6.0")
+
+
 
 }
