@@ -1,4 +1,4 @@
-package com.example.lessons.Screens.Register.Tests
+package com.example.lessons
 
 import com.example.lessons.Screens.Register.RegisterState
 import com.example.lessons.Screens.Register.RegisterViewModel

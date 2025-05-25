@@ -1,11 +1,7 @@
 package com.example.lessons
 
 import android.content.Context
-import android.util.Log
-import androidx.annotation.Nullable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.lessons.Models.FormValid
 import com.example.lessons.Models.Lesson
 import com.example.lessons.Models.Person
@@ -13,7 +9,6 @@ import com.example.lessons.Models.ScheduleItem
 import com.example.lessons.Models.UserManager
 import com.example.lessons.Models.group
 import com.example.lessons.ui.theme.WorkForPerson
-import com.google.firebase.appdistribution.gradle.ApiService
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.postgrest.postgrest
@@ -48,13 +43,7 @@ import org.junit.Assert.assertNull
 
 import org.junit.Assert.*
 import org.junit.Before
-import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
-import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.whenever
+
 import java.security.acl.Group
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit

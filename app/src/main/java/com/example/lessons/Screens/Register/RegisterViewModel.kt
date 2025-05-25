@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lessons.Methods.hashPassword
+import com.example.lessons.Methods.DefaultPasswordHasher.hashPassword
 import com.example.lessons.Methods.isEmailValid
 import com.example.lessons.supabase
 import io.github.jan.supabase.postgrest.from

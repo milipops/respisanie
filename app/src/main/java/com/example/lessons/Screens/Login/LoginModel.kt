@@ -2,7 +2,10 @@ package com.example.lessons.Screens.Login
 
 import android.util.Log
 import androidx.navigation.NavController
-import com.example.lessons.Methods.hashPassword
+import com.example.lessons.Methods.DefaultPasswordHasher
+import com.example.lessons.Methods.PasswordHasher
+import com.example.lessons.Methods.SupabaseUserRepository
+import com.example.lessons.Methods.UserRepository
 import com.example.lessons.Methods.isEmailValid
 import com.example.lessons.Models.Person
 import com.example.lessons.supabase
@@ -10,8 +13,19 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class LoginModel {
+open class LoginModel(private val passwordHasher: PasswordHasher = DefaultPasswordHasher) {
 
+//    Для тестов
+//    open class LoginModel(
+//        private val passwordHasher: PasswordHasher = DefaultPasswordHasher,
+//        private val userRepository: UserRepository = SupabaseUserRepository()
+//    ) {
+//        suspend fun findUserByEmail(email: String): Person? {
+//            Log.d("LoginModel", "Searching user by email: $email")
+//            return userRepository.findUserByEmail(email)
+//        }
+
+//Для дефолт работы
     suspend fun findUserByEmail(email: String): Person? {
         Log.d("LoginModel", "Поиск пользователя по email: $email")
         return try {
@@ -28,6 +42,7 @@ class LoginModel {
             null
         }
     }
+
     fun handleLogin(
         email: String,
         password: String,
@@ -37,6 +52,7 @@ class LoginModel {
         onLoading: (Boolean) -> Unit,
         onSuccess: (Person) -> Unit
     ) {
+
         if (email.isBlank() || !email.isEmailValid()) {
             Log.d("LoginModel", "Некорректный email: $email")
             onError("Введите корректный email")
@@ -56,7 +72,7 @@ class LoginModel {
                 } else {
                     Log.d("LoginModel", "Пользователь найден: ${user.email}")
 
-                    val hashedInputPassword = hashPassword(password)
+                    val hashedInputPassword = passwordHasher.hashPassword(password)
 
                     if (user.password != hashedInputPassword) {
                         Log.d("LoginModel", "Неверный пароль для email: $email")
@@ -64,7 +80,9 @@ class LoginModel {
                     } else {
                         Log.d("LoginModel", "Успешный вход пользователя с email: ${user.email}")
                         onSuccess(user)
-                        navController.navigate("content") { popUpTo("login") }
+                        navController.navigate("content") {
+                            popUpTo("login") { inclusive = true }
+                        }
                     }
                 }
             } catch (e: Exception) {
