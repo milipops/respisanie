@@ -13,19 +13,12 @@ import io.github.jan.supabase.postgrest.from
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-open class LoginModel(private val passwordHasher: PasswordHasher = DefaultPasswordHasher) {
 
-//    Для тестов
-//    open class LoginModel(
-//        private val passwordHasher: PasswordHasher = DefaultPasswordHasher,
-//        private val userRepository: UserRepository = SupabaseUserRepository()
-//    ) {
-//        suspend fun findUserByEmail(email: String): Person? {
-//            Log.d("LoginModel", "Searching user by email: $email")
-//            return userRepository.findUserByEmail(email)
-//        }
+    open class LoginModel(
+        private val passwordHasher: PasswordHasher = DefaultPasswordHasher,
+        private val userRepository: UserRepository = SupabaseUserRepository()
+    ) {
 
-//Для дефолт работы
     suspend fun findUserByEmail(email: String): Person? {
         Log.d("LoginModel", "Поиск пользователя по email: $email")
         return try {
