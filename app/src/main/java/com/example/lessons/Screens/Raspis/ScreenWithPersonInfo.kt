@@ -53,12 +53,11 @@ import com.example.lessons.ui.theme.WorkForPerson
 fun PersonInfo(
     viewModel: WorkForPerson,
     navController: NavController
-
 ) {
-    val backgroundColor = Color(0xFF5DA8FF)
-    val inputColor = Color(0xFFA2C7FF)
-    val buttonColor = Color(0xFF003366)
-    val textColor = Color.White
+    val backgroundColor = Color(0xFF0066FF)  // из RegisterScreen
+    val buttonColor = Color.White            // из RegisterScreen
+    val textColor = Color.White              // из RegisterScreen
+    val cardColor = Color(0xFFA2C7FF)        // оставим для карточек (можно менять)
 
     val context = LocalContext.current
     val userData by viewModel.currentUser.collectAsState()
@@ -77,7 +76,6 @@ fun PersonInfo(
             .fillMaxSize()
             .background(backgroundColor)
     ) {
-        // Блок с аватаром
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,7 +92,6 @@ fun PersonInfo(
                         contentScale = ContentScale.Crop
                     )
                 }
-
                 !currentUser?.image_url.isNullOrEmpty() -> {
                     AsyncImage(
                         model = currentUser?.image_url,
@@ -117,25 +114,29 @@ fun PersonInfo(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        // Карточки с информацией
         UserInfoCard(
             title = "Имя",
             value = currentUser?.name ?: "Не указано",
+            cardColor = cardColor,
+            textColor = textColor
         )
 
         UserInfoCard(
             title = "Почта",
             value = currentUser?.email ?: "Не указано",
+            cardColor = cardColor,
+            textColor = textColor
         )
 
         UserInfoCard(
             title = "Телефон",
             value = currentUser?.phone ?: "Не указано",
+            cardColor = cardColor,
+            textColor = textColor
         )
 
-        // Кнопки
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,9 +152,11 @@ fun PersonInfo(
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = buttonColor)
             ) {
-                Text("Сохранить", fontSize = 18.sp)
+                Text("Сохранить", fontSize = 18.sp, color = backgroundColor)
             }
+
             Spacer(modifier = Modifier.height(10.dp))
+
             Button(
                 onClick = {
                     viewModel.signOut()
@@ -171,18 +174,13 @@ fun PersonInfo(
             Button(
                 onClick = {
                     currentUser?.id?.let { userId ->
-                        viewModel.deleteAccount(userId,context){
+                        viewModel.deleteAccount(userId, context) {
                             Toast.makeText(context, "Данные удалены", Toast.LENGTH_SHORT).show()
                             navController.navigate("login")
                         }
                     } ?: run {
-                        Toast.makeText(
-                            context,
-                            "Ошибка: пользователь не найден",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
                     }
-
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
@@ -194,26 +192,27 @@ fun PersonInfo(
 }
 
 @Composable
-fun UserInfoCard(title: String, value: String) {
+fun UserInfoCard(title: String, value: String, cardColor: Color, textColor: Color) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFA2C7FF))
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
                 fontSize = 14.sp,
-                color = Color.White
+                color = textColor
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = textColor
             )
         }
     }
