@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.lessons.Models.BellItem
 import com.example.lessons.Screens.UiShedule.ScheduleList
@@ -37,7 +38,6 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -45,28 +45,25 @@ fun ScheduleScreen(
     groupId: Int,
     viewModel: WorkForPerson
 ) {
-    val backgroundColor = Color(0xFF5DA8FF)
-    val inputColor = Color(0xFFA2C7FF)
-    val buttonColor = Color(0xFF003366)
-    val textColor = Color.White
-
     var selectedGroupId by remember { mutableStateOf(groupId) }
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
     var showDatePicker by remember { mutableStateOf(false) }
-
     var expanded by remember { mutableStateOf(false) }
 
     val groupes by viewModel.Group.collectAsState()
     val imageUrl = remember { mutableStateOf("") }
     var groupText by remember { mutableStateOf("") }
 
-    LaunchedEffect(groupId) {
-        val url = viewModel.getUrlImage(groupId.toString())
-        imageUrl.value = url
+    val backgroundColor = Color(0xFF0066FF)
+    val inputColor = Color(0xFFA2C7FF)
+    val buttonColor = Color.White
+    val cardColor = Color(0xFFA2C7FF)
+    val textColor = Color.White
 
-        val card = groupes.find { it.id == groupId }
-        groupText = card?.Name ?: "Неизвестно"
+    LaunchedEffect(groupId) {
+        imageUrl.value = viewModel.getUrlImage(groupId.toString())
+        groupText = groupes.find { it.id == groupId }?.Name ?: "Неизвестно"
     }
 
     Box(
@@ -76,72 +73,60 @@ fun ScheduleScreen(
             .padding(16.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+            // Выпадающий список группы
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded }
             ) {
-                ExposedDropdownMenuBox(
+                TextField(
+                    value = groupText,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Группа", color = textColor) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        containerColor = inputColor,
+                        focusedLabelColor = textColor,
+                        unfocusedLabelColor = textColor,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .menuAnchor()
+                )
+
+                ExposedDropdownMenu(
                     expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
+                    onDismissRequest = { expanded = false }
                 ) {
-                    TextField(
-                        value = groupText,
-                        onValueChange = { },
-                        readOnly = true,
-                        label = { Text("Группа") },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            containerColor = inputColor,
-                            focusedLabelColor = textColor,
-                            unfocusedLabelColor = textColor,
-                        ),
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        if (groupes.isEmpty()) {
+                    if (groupes.isEmpty()) {
+                        DropdownMenuItem(
+                            text = { Text("Группы не найдены") },
+                            onClick = {}
+                        )
+                    } else {
+                        groupes.forEach { group ->
                             DropdownMenuItem(
-                                text = { Text("Группы не найдены") },
-                                onClick = {}
+                                text = { Text(group.Name ?: "Неизвестно") },
+                                onClick = {
+                                    groupText = group.Name ?: "Неизвестно"
+                                    selectedGroupId = group.id
+                                    expanded = false
+                                }
                             )
-                        } else {
-                            groupes.forEach { group ->
-                                DropdownMenuItem(
-                                    text = { Text(group.Name ?: "Неизвестно") },
-                                    onClick = {
-                                        groupText = group.Name ?: "Неизвестно"
-                                        selectedGroupId = group.id
-                                        expanded = false
-                                    }
-                                )
-                            }
                         }
                     }
                 }
             }
 
+            // Выбор даты
             OutlinedTextField(
                 value = selectedDate.format(dateFormatter),
                 onValueChange = {},
                 label = { Text("Дата", color = textColor) },
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    containerColor = inputColor,
-                    focusedLabelColor = textColor,
-                    unfocusedLabelColor = textColor,
-                ),
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.DateRange,
@@ -149,47 +134,50 @@ fun ScheduleScreen(
                         tint = textColor
                     )
                 },
+                readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
                     .clickable { showDatePicker = true },
-                readOnly = true
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    containerColor = inputColor,
+                    focusedLabelColor = textColor,
+                    unfocusedLabelColor = textColor,
+                )
             )
+
             Button(
                 onClick = {
                     val epochDate = selectedDate
                         .atStartOfDay(ZoneId.systemDefault())
                         .toEpochSecond()
-
                     if (selectedGroupId != 0) {
                         viewModel.loadSchedule(selectedGroupId, epochDate)
-                    } else {
-                        println("Ошибка: группа не выбрана или не найдена")
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = buttonColor,
-                    contentColor = textColor
+                    contentColor = backgroundColor
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Смотреть")
+                Text("Смотреть", fontSize = 18.sp)
             }
+
             val bells = remember {
                 listOf(
-                    BellItem(para = 1, start_time = "08:00", end_time = "09:30"),
-                    BellItem(para = 2, start_time = "09:50", end_time = "11:20"),
-                    BellItem(para = 3, start_time = "11:50", end_time = "13:20"),
-                    BellItem(para = 4, start_time = "13:30", end_time = "15:00"),
-                    BellItem(para = 5, start_time = "15:10", end_time = "16:40"),
-                    BellItem(para = 6, start_time = "16:50", end_time = "18:20")
+                    BellItem(1, "08:00", "09:30"),
+                    BellItem(2, "09:50", "11:20"),
+                    BellItem(3, "11:50", "13:20"),
+                    BellItem(4, "13:30", "15:00"),
+                    BellItem(5, "15:10", "16:40"),
+                    BellItem(6, "16:50", "18:20")
                 )
             }
 
             ScheduleList(viewModel = viewModel, bells = bells)
-
         }
     }
 
@@ -204,16 +192,14 @@ fun ScheduleScreen(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
-                Button(
-                    onClick = {
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            selectedDate = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
-                        }
-                        showDatePicker = false
+                Button(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = Instant.ofEpochMilli(millis)
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate()
                     }
-                ) {
+                    showDatePicker = false
+                }) {
                     Text("OK")
                 }
             }

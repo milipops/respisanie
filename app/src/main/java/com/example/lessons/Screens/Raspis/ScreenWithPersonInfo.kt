@@ -114,7 +114,7 @@ fun PersonInfo(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         UserInfoCard(
             title = "Имя",

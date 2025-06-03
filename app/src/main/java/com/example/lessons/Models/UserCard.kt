@@ -18,25 +18,27 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun UserInfoCard(title: String, value: String) {
+fun UserInfoCard(title: String, value: String, cardColor: Color, textColor: Color) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        colors = CardDefaults.cardColors(containerColor = cardColor)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Text(
                 text = title,
-                fontSize = 14.sp,
-                color = Color.Gray
+                fontSize = 12.sp,
+                color = textColor
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = value,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = textColor
             )
         }
     }
